@@ -285,7 +285,7 @@ Les **embeddings** sont le résultat de la vectorisation : ce sont les vecteurs 
 from sentence_transformers import SentenceTransformer
 modele = SentenceTransformer('all-MiniLM-L6-v2')
 embedding = modele.encode("Le chat dort")  # Vecteur de 384 nombres, ex. [0.1, -0.3, 0.5, ...]
-
+```
 
 Cet embedding est ensuite indexé dans Faiss, qui agit comme un classeur numérique ultra-rapide. Faiss utilise des algorithmes comme FlatL2 ou HNSW pour organiser les vecteurs, permettant des recherches en quelques millisecondes. Par exemple, on a indexé 10 000 phrases (50 Mo) en 5 minutes sur un PC avec 16 Go de RAM. Une recherche type – "Trouver des phrases similaires à ‘Le chat dort’" – prend 10 ms et retourne les 5 résultats les plus proches, comme "Le félin repose" ou "Le chaton sommeille." On a testé avec un dataset plus large (50 000 phrases) : indexation en 20 minutes, recherche en 12 ms, précision de 90 %.
 
@@ -471,16 +471,10 @@ async def query(q: str):
     # Appel simulé à Ollama (en réalité, via API Ollama)
     response = f"Réponse à : {q}"  # Remplacer par appel réel
     return {"response": response}
-
+```
 Dockerfile pour l’API :
 
-dockerfile
 
-Réduire
-
-Envelopper
-
-Copier
 ```Docker
 FROM python:3.9-slim
 WORKDIR /app
@@ -498,13 +492,9 @@ On a testé : 1 000 requêtes en 10 minutes, latence moyenne 5 ms (hors LLM), 0 
 Agent : La Recherche Contextuelle
 L’Agent vectorise et cherche les données pertinentes. Voici un extrait de agent.py :
 
-python
 
-Réduire
 
-Envelopper
-
-Copier
+```python
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
@@ -529,21 +519,19 @@ def chercher(question):
 
 if __name__ == "__main__":
     print(chercher("Quel est notre stock ?"))
+```
 Dockerfile pour l’Agent :
 
-dockerfile
-
-Réduire
-
-Envelopper
-
-Copier
+```Docker
 FROM python:3.9-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt  # sentence-transformers, faiss-cpu
 COPY . .
 CMD ["python", "agent.py"]
+```
+
+
 SentenceTransformer : Vectorise en 5 ms/phrase.
 faiss.IndexFlatL2 : Recherche exacte, 10 ms pour 10 000 documents.
 requests : Envoie la requête à l’API.
@@ -552,13 +540,7 @@ Test : 500 requêtes, latence moyenne 15 ms (vectorisation + recherche), précis
 UI : L’Interface Utilisateur
 L’UI est le point d’entrée pour interagir avec la stack. Voici un extrait de app.py pour l’UI :
 
-python
-
-Réduire
-
-Envelopper
-
-Copier
+```Python
 import streamlit as st
 import requests
 import plotly.express as px
@@ -591,15 +573,10 @@ st.plotly_chart(fig, use_container_width=True)
 # Option de téléchargement
 if st.button("Télécharger réponses"):
     st.download_button("Télécharger CSV", "question,réponse\nExemple,Simulé", file_name="reponses.csv")
+```
 Dockerfile pour l’UI :
 
-dockerfile
-
-Réduire
-
-Envelopper
-
-Copier
+```Python
 FROM python:3.9-slim
 WORKDIR /app
 COPY requirements.txt .
@@ -610,6 +587,7 @@ st.text_input : Boîte pour taper la question.
 requests.get : Envoie la question à l’API.
 px.line : Graphique Plotly des temps de réponse.
 st.download_button : Télécharge les réponses en CSV.
+```
 Test : 10 utilisateurs simultanés sur un réseau local, latence d’affichage 170 ms, charge CPU 10 % sur un PC avec 4 Go de RAM. L’UI est accessible via localhost:8501 et reste fluide même après 1 000 requêtes. On a aussi testé sur un Raspberry Pi 4 (4 Go RAM) : chargement en 5 secondes, latence 200 ms, charge CPU 50 %, montrant une compatibilité avec des machines légères. On a ajouté une fonctionnalité : un historique des 10 dernières requêtes (stocké localement, chiffré AES-256), accessible via un bouton "Historique", avec un temps de chargement de 50 ms.
 
 [Insérer schéma : "Interface UI" - Boîte de texte → Bouton "Envoyer" → Réponse affichée, avec graphique Plotly en dessous]
