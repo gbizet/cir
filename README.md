@@ -250,7 +250,7 @@ Aucune donnée ne sort de votre réseau local ou de l’UE si vous utilisez un p
 fastapi==0.95.0
 uvicorn==0.21.1
 ollama==0.1.0
-
+```
 On lance tout avec `docker-compose up --build`, et en 20 secondes, la stack est opérationnelle. On a testé sur un serveur Ubuntu 22.04 avec 16 Go de RAM : démarrage stable, 70 % de mémoire utilisée, et aucune erreur après 24 heures d’exécution continue. Même un ingénieur junior peut déployer la stack en suivant notre guide : clonage du dépôt Git, installation de Docker, et lancement. On a chronométré : 15 minutes du début à la première réponse, un record pour une stack IA complexe. On a aussi documenté le processus dans un README : installation de Docker (5 min), clonage (1 min), build (5 min), lancement (20 s). Une PME a déployé la stack en 20 minutes sur un vieux PC (Intel i5, 8 Go RAM), prouvant sa simplicité. On a aussi testé sur Windows 11 avec WSL2 : même résultat, 20 minutes, 0 erreur, montrant une compatibilité multi-plateforme.
 
 - **Flexibilité et Maintenance**  
@@ -453,7 +453,7 @@ services:
     volumes:
       - ./ui:/app
     restart: unless-stopped
-
+```
 
 On lance tout avec `docker-compose up --build`. Sur un serveur Ubuntu 22.04 avec 16 Go de RAM, tout démarre en 20 secondes, occupant 70 % de la mémoire. On a testé la stabilité : 24 heures d’exécution continue, 0 crash, consommation stable. Si un conteneur plante (ex. UI), il redémarre automatiquement grâce à `restart: unless-stopped`. On a aussi testé sur Windows 11 avec WSL2 : démarrage en 25 secondes, 0 erreur, montrant une compatibilité multi-plateforme. On a simulé un déploiement dans une PME : un ingénieur sans expérience Docker a suivi notre guide et a déployé la stack en 20 minutes, avec une première réponse en 180 ms, prouvant la simplicité d’utilisation.
 
@@ -481,12 +481,14 @@ Réduire
 Envelopper
 
 Copier
+```Docker
 FROM python:3.9-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt  # fastapi, uvicorn, ollama
 COPY . .
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+```
 FastAPI : Framework rapide, asynchrone, idéal pour les API REST.
 uvicorn : Serveur ASGI pour exécuter FastAPI.
 OLLAMA_LLM_LIBRARY=cpu : Configure Ollama pour CPU (ou GPU si disponible).
