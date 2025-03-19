@@ -210,7 +210,7 @@ services:
       - "8501:8501"
     volumes:
       - ./ui:/app
-
+```
 
 Commande de lancement : docker-compose up --build. Sur un serveur Ubuntu 22.04 avec 16 Go de RAM, tout démarre en 20 secondes, occupant 70 % de la mémoire. On a laissé tourner 24 heures : aucune erreur, consommation stable.
 
